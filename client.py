@@ -6,6 +6,7 @@ from httphmac.v2 import V2Signer as Signer
 
 import hashlib
 import uuid
+import json
 
 class ContentHub:
 
@@ -60,3 +61,14 @@ class ContentHub:
             return False
         return r.text
 
+    def register_client(self, name):
+        "Returns a client with name and uuid"
+        url = urllib.parse.urljoin(self.host, "/register")
+
+        data = {
+            "name": name,
+        }
+        r = self.send(url, "POST", json.dumps(data))
+        if r.status_code != 200:
+            return False
+        return r.text
