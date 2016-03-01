@@ -15,7 +15,8 @@ class ContentHub:
         self.session = requests.Session()
         self.responses = []
         self.max_response_stack = 10
-        self.client_id = ""
+        self.client_id = None
+        self.pub_key = None
         self.secret_key = ""
         self.signer = Signer(hashlib.sha256)
 
@@ -28,13 +29,15 @@ class ContentHub:
     def send(self, url, method, body = None):
 
         auth = {
-            "id": "Access-key",
+            "id": self.pub_key,
             "nonce": uuid.uuid4(),
             "realm": "Plexus",
             "version": "2.0",
         }
 
         request = Request().with_method(method).with_url(url).with_time()
+        if self.client_id is not None:
+            request.with_header("X-Acquia-Plexus-Client-Id", self.client_id)
         if body is not None:
             databytes = body.encode('utf-8')
             request.with_json_body(databytes)
@@ -56,7 +59,7 @@ class ContentHub:
         url = urllib.parse.urljoin(self.host, "/entities")
 
         r = self.send(url, "GET")
-        self.save_stack(r)
+        # self.save_stack(r)
         if r.status_code != 200:
             return False
         return r.text
