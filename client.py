@@ -15,7 +15,6 @@ class ContentHub:
         self.session = requests.Session()
         self.responses = []
         self.max_response_stack = 10
-        self.client_id = None
         self.pub_key = None
         self.secret_key = ""
         self.signer = Signer(hashlib.sha256)
@@ -54,16 +53,6 @@ class ContentHub:
             return False
         return True
 
-
-    def list_from_cache(self):
-        url = urllib.parse.urljoin(self.host, "/entities")
-
-        r = self.send(url, "GET")
-        # self.save_stack(r)
-        if r.status_code != 200:
-            return False
-        return r.text
-
     def register_client(self, name):
         "Returns a client with name and uuid"
         url = urllib.parse.urljoin(self.host, "/register")
@@ -72,6 +61,24 @@ class ContentHub:
             "name": name,
         }
         r = self.send(url, "POST", json.dumps(data))
+        if r.status_code != 200:
+            return False
+        client_data = json.loads(r.text)
+        client = Client(self, client_data["id"], client_date["name"])
+        return client
+
+
+Class Client:
+    def __init__(self, connentor, id, name):
+        self.connector = connector
+        self.id = id
+        self.name = name
+
+
+    def list_from_cache(self):
+        url = urllib.parse.urljoin(self.connector.host, "/entities")
+
+        r = self.connector.send(url, "GET")
         if r.status_code != 200:
             return False
         return r.text
