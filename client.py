@@ -25,7 +25,7 @@ class ContentHub:
         self.responses.append(response)
 
 
-    def send(self, url, method, body = None):
+    def send(self, url, method, client_id = None, body = None):
 
         auth = {
             "id": self.pub_key,
@@ -35,8 +35,8 @@ class ContentHub:
         }
 
         request = Request().with_method(method).with_url(url).with_time()
-        if self.client_id is not None:
-            request.with_header("X-Acquia-Plexus-Client-Id", self.client_id)
+        if client_id is not None:
+            request.with_header("X-Acquia-Plexus-Client-Id", client_id)
         if body is not None:
             databytes = body.encode('utf-8')
             request.with_json_body(databytes)
@@ -68,8 +68,8 @@ class ContentHub:
         return client
 
 
-Class Client:
-    def __init__(self, connentor, id, name):
+class Client:
+    def __init__(self, connector, id, name):
         self.connector = connector
         self.id = id
         self.name = name
