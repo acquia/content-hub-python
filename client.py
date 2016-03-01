@@ -60,11 +60,12 @@ class ContentHub:
         data = {
             "name": name,
         }
-        r = self.send(url, "POST", json.dumps(data))
+        r = self.send(url, "POST", None, json.dumps(data))
         if r.status_code != 200:
+            print("register:", r, r.text)
             return False
         client_data = json.loads(r.text)
-        client = Client(self, client_data["id"], client_date["name"])
+        client = Client(self, client_data["uuid"], client_data["name"])
         return client
 
 
@@ -78,7 +79,7 @@ class Client:
     def list_from_cache(self):
         url = urllib.parse.urljoin(self.connector.host, "/entities")
 
-        r = self.connector.send(url, "GET")
+        r = self.connector.send(url, "GET", self.id)
         if r.status_code != 200:
             return False
         return r.text
