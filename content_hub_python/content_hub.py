@@ -2,6 +2,7 @@ from httphmac.request import Request
 from httphmac.v2 import V2Signer as Signer
 
 from .common import HttpError
+from .client import Client
 
 import urllib.parse
 import requests

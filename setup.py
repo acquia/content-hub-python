@@ -1,8 +1,9 @@
-from distutils.core import setup
+from setuptools import *
+
 setup(
-  name = 'content-hub-python',
-  packages = ['content-hub-python'], # this must be the same as the name above
-  version = '0.1',
+  name = 'content_hub_python',
+  packages = find_packages(), # this must be the same as the name above
+  version = '1.0.0a0',
   description = 'A python client library for Acquia Content Hub',
   author = 'Acquia',
   author_email = 'denes.lados@acquia.com',
