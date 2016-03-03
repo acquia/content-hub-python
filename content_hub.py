@@ -1,6 +1,8 @@
 from httphmac.request import Request
 from httphmac.v2 import V2Signer as Signer
 
+from common import HttpError
+
 import urllib.parse
 import requests
 import hashlib
@@ -62,7 +64,7 @@ class ContentHub:
         r = self.send(url, "POST", None, json.dumps(data))
         if r.status_code != 200:
             print("register:", r, r.text)
-            return False
+            raise HttpError(r)
         client_data = json.loads(r.text)
         client = Client(self, client_data["uuid"], client_data["name"])
         return client

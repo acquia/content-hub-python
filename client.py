@@ -1,4 +1,6 @@
 import urllib.parse
+import ContentHub
+import HttpError
 
 class Client:
     def __init__(self, connector, id, name):
@@ -12,5 +14,5 @@ class Client:
 
         r = self.connector.send(url, "GET", self.id)
         if r.status_code != 200:
-            return False
+            raise HttpError(r)
         return r.text
