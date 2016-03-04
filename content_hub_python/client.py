@@ -25,7 +25,16 @@ class Client:
     def create_entity(self, entity):
         url = urllib.parse.urljoin(self.connector.host, "/entities")
 
-        r = self.connector.send(url, "GET", self.id, entity)
+        r = self.connector.send(url, "POST", self.id, entity)
+        if r.status_code != 202:
+            raise HttpError(r)
+        return r.text
+
+    def delete_entity(self, uuid):
+        uuid = int(uuid)
+        url = urllib.parse.urljoin(self.connector.host, "/entities/" + str(uuid))
+
+        r = self.connector.send(url, "DELETE", self.id)
         if r.status_code != 202:
             raise HttpError(r)
         return r.text
