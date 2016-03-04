@@ -8,8 +8,7 @@ class Client:
         self.id = id
         self.name = name
 
-
-    def get_entities(self, uuid = None, all_revision = False):
+    def get_entities(self, uuid=None, all_revision=False):
         uuid = int(uuid)
         url = urllib.parse.urljoin(self.connector.host, "/entities")
         if uuid:
@@ -26,6 +25,17 @@ class Client:
         url = urllib.parse.urljoin(self.connector.host, "/entities")
 
         r = self.connector.send(url, "POST", self.id, entity)
+        if r.status_code != 202:
+            raise HttpError(r)
+        return r.text
+
+    def update_entities(self, entities, uuid=None):
+        uuid = int(uuid)
+        url = urllib.parse.urljoin(self.connector.host, "/entities")
+
+        if uuid:
+            url = urllib.parse.urljoin(url, "/" + str(uuid))
+        r = self.connector.send(url, "PUT", self.id, entities)
         if r.status_code != 202:
             raise HttpError(r)
         return r.text
