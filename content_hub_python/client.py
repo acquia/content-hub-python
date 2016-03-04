@@ -9,10 +9,23 @@ class Client:
         self.name = name
 
 
-    def list_from_cache(self):
+    def get_entities(self, uuid = None, all_revision = False):
+        uuid = int(uuid)
         url = urllib.parse.urljoin(self.connector.host, "/entities")
+        if uuid:
+            url = urllib.parse.urljoin(url, "/" + str(uuid))
+            if all_revision:
+                url = urllib.parse.urljoin(url, "/revisions")
 
         r = self.connector.send(url, "GET", self.id)
         if r.status_code != 200:
+            raise HttpError(r)
+        return r.text
+
+    def create_entity(self, entity):
+        url = urllib.parse.urljoin(self.connector.host, "/entities")
+
+        r = self.connector.send(url, "GET", self.id, entity)
+        if r.status_code != 202:
             raise HttpError(r)
         return r.text
