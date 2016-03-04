@@ -36,7 +36,12 @@ class Client:
             raise HttpError(r)
         return r.text
 
-    def create_entity(self, entity):
+    def create_entities(self, entity):
+        '''
+        Creates one or more entity in Content Hub
+        :param entity: Raw CDF that lists all entities to upload
+        :return:
+        '''
         url = urllib.parse.urljoin(self.connector.host, "/entities")
 
         r = self.connector.send(url, "POST", self.id, entity)
@@ -45,6 +50,13 @@ class Client:
         return r.text
 
     def update_entities(self, entities, uuid=None):
+        '''
+        Updates one or more entities
+        :param entities: Updated entities in a raw CDF
+        :param uuid: If set only only the entitiy with that uuid will be updated.
+        If set, "entities" can only contain one entity, and unchanged fields can be omitted.
+        :return:
+        '''
         uuid = int(uuid)
         url = urllib.parse.urljoin(self.connector.host, "/entities")
 
@@ -56,10 +68,15 @@ class Client:
         return r.text
 
     def delete_entity(self, uuid):
+        '''
+        Deletes an entity
+        :param uuid: Uuid of the entity to be deleted.
+        :return: True if succesful
+        '''
         uuid = int(uuid)
         url = urllib.parse.urljoin(self.connector.host, "/entities/" + str(uuid))
 
         r = self.connector.send(url, "DELETE", self.id)
         if r.status_code != 202:
             raise HttpError(r)
-        return r.text
+        return True
