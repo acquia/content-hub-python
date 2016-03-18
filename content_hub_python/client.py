@@ -96,4 +96,15 @@ class Client:
         r = self.connector.send(url, "POST", self.id, search)
         if r.status_code != 200:
             raise HttpError(r)
-        return True
+        return r.text
+
+    def get_settings(self):
+        '''
+        Returns information about the current subscription
+        '''
+        url = urlparse.urljoin(self.connector.host, "/settings")
+
+        r = self.connector.send(url, "GET", self.id)
+        if r.status_code != 200:
+            raise HttpError(r)
+        return r.text
