@@ -1,4 +1,7 @@
-import urllib.parse
+try:
+    import urllib.parse as urlparse
+except:
+    import urlparse as urlparse
 # from .content_hub import ContentHub
 from .common import HttpError
 
@@ -11,7 +14,7 @@ class Client:
         :param name: Name of the client
         '''
 
-        self.connector = connector
+        self.connector = connector;
         self.id = id
         self.name = name
 
@@ -23,13 +26,13 @@ class Client:
         If False only the last one will be returned. Note that a true value is ignored if uuid is not set.
         :return: Raw CDF with all the returned entities.
         '''
-
-        uuid = int(uuid)
-        url = urllib.parse.urljoin(self.connector.host, "/entities")
+        if uuid is not None:
+            uuid = int(uuid)
+        url = urlparse.urljoin(self.connector.host, "/entities")
         if uuid:
-            url = urllib.parse.urljoin(url, "/" + str(uuid))
+            url = urlparse.urljoin(url, "/" + str(uuid))
             if all_revision:
-                url = urllib.parse.urljoin(url, "/revisions")
+                url = urlparse.urljoin(url, "/revisions")
 
         r = self.connector.send(url, "GET", self.id)
         if r.status_code != 200:
@@ -42,7 +45,7 @@ class Client:
         :param entity: Raw CDF that lists all entities to upload
         :return:
         '''
-        url = urllib.parse.urljoin(self.connector.host, "/entities")
+        url = urlparse.urljoin(self.connector.host, "/entities")
 
         r = self.connector.send(url, "POST", self.id, entity)
         if r.status_code != 202:
@@ -57,11 +60,12 @@ class Client:
         If set, "entities" can only contain one entity, and unchanged fields can be omitted.
         :return:
         '''
-        uuid = int(uuid)
-        url = urllib.parse.urljoin(self.connector.host, "/entities")
+        if uuid is not None:
+            uuid = int(uuid)
+        url = urlparse.urljoin(self.connector.host, "/entities")
 
         if uuid:
-            url = urllib.parse.urljoin(url, "/" + str(uuid))
+            url = urlparse.urljoin(url, "/" + str(uuid))
         r = self.connector.send(url, "PUT", self.id, entities)
         if r.status_code != 202:
             raise HttpError(r)
@@ -69,14 +73,27 @@ class Client:
 
     def delete_entity(self, uuid):
         '''
-        Deletes an entity
+        Deletes an entity.
         :param uuid: Uuid of the entity to be deleted.
         :return: True if succesful
         '''
         uuid = int(uuid)
-        url = urllib.parse.urljoin(self.connector.host, "/entities/" + str(uuid))
+        url = urlparse.urljoin(self.connector.host, "/entities/" + str(uuid))
 
         r = self.connector.send(url, "DELETE", self.id)
         if r.status_code != 202:
+            raise HttpError(r)
+        return True
+
+    def search(self, search):
+        '''
+        Performs a search on content hub's elasticsearch cluster.
+        :param search: An elasticsearch search in json
+        :return: Result from elasticsearch in json
+        '''
+        url = urlparse.urljoin(self.connector.host, "/_search")
+
+        r = self.connector.send(url, "POST", self.id, search)
+        if r.status_code != 200:
             raise HttpError(r)
         return True

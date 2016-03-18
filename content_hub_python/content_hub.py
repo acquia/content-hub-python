@@ -4,7 +4,11 @@ from httphmac.v2 import V2Signer as Signer
 from .common import HttpError
 from .client import Client
 
-import urllib.parse
+try:
+    import urllib.parse as urlparse
+except:
+    import urlparse as urlparse
+
 import requests
 import hashlib
 import uuid
@@ -28,6 +32,14 @@ class ContentHub:
 
 
     def send(self, url, method, client_id = None, body = None):
+        '''
+        Sends a request to content hub.
+        :param url: Url of the request
+        :param method: HTTP method
+        :param client_id: Value of the X-Acquia-Plexus-Client-Id header
+        :param body: HTTP body.
+        :return: Response object.
+        '''
 
         auth = {
             "id": self.pub_key,
@@ -48,7 +60,7 @@ class ContentHub:
 
 
     def ping(self):
-        url = urllib.parse.urljoin(self.host, "ping")
+        url = urlparse.urljoin(self.host, "ping")
         r = self.session.get(url)
         self.save_stack(r)
         if r.status_code != 200:
@@ -57,7 +69,7 @@ class ContentHub:
 
     def register_client(self, name):
         "Returns a client with name and uuid"
-        url = urllib.parse.urljoin(self.host, "/register")
+        url = urlparse.urljoin(self.host, "/register")
 
         data = {
             "name": name,
